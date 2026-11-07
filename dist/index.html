@@ -9,7 +9,7 @@
     <link rel="icon" href="./mark.svg" type="image/svg+xml">
     <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./site.css?v=3">
-    <script src="./app.js?v=4" type="module"></script>
+    <script src="./app.js?v=5" type="module"></script>
   </head>
   <body class="min-h-dvh bg-canvas text-ink antialiased">
     <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
@@ -123,14 +123,14 @@
         <p id="log-date" class="mt-4 rounded-xl bg-canvas px-3 py-2 text-sm text-muted"></p>
         <label for="log-subject" class="mt-4 mb-1.5 block text-sm font-bold">درس</label>
         <select id="log-subject" name="subject" class="field w-full" required></select>
-        <label for="log-duration" class="mt-4 mb-1.5 block text-sm font-bold">مدت مطالعه به دقیقه</label>
-        <input id="log-duration" name="duration" type="text" inputmode="numeric" maxlength="4" class="field w-full" placeholder="مثلاً ۷۰" aria-describedby="duration-hint duration-error" required>
-        <p id="duration-hint" class="mt-1 text-xs leading-6 text-muted">از ۱ تا ۱۴۴۰ دقیقه. عدد فارسی و انگلیسی پذیرفته می‌شود.</p>
-        <p id="duration-error" role="alert" class="mt-1 text-sm text-red-800" hidden>مدت را به‌صورت یک عدد صحیح بین ۱ و ۱۴۴۰ دقیقه وارد کن.</p>
+        <label for="log-duration" class="mt-4 mb-1.5 block text-sm font-bold">مدت مطالعه به ساعت</label>
+        <input id="log-duration" name="duration" type="text" inputmode="decimal" maxlength="10" class="field w-full" placeholder="مثلاً ۱٫۵" aria-describedby="duration-hint duration-error" required>
+        <p id="duration-hint" class="mt-1 text-xs leading-6 text-muted">عدد اعشاری هم پذیرفته می‌شود. مثلاً ۱٫۵ یعنی یک ساعت و نیم.</p>
+        <p id="duration-error" role="alert" class="mt-1 text-sm text-red-800" hidden>مدت مطالعه باید دست‌کم یک دقیقه و حداکثر ۲۴ ساعت باشد. آن را به ساعت وارد کن.</p>
         <div class="mt-2 flex flex-wrap gap-2" aria-label="مدت‌های پیشنهادی">
-          <button type="button" data-minutes="30" class="button-secondary">۳۰ دقیقه</button>
-          <button type="button" data-minutes="50" class="button-secondary">۵۰ دقیقه</button>
-          <button type="button" data-minutes="70" class="button-secondary">۷۰ دقیقه</button>
+          <button type="button" data-hours="0.5" class="button-secondary">نیم ساعت</button>
+          <button type="button" data-hours="1" class="button-secondary">۱ ساعت</button>
+          <button type="button" data-hours="1.5" class="button-secondary">۱٫۵ ساعت</button>
         </div>
         <button type="submit" class="button-primary mt-5 w-full">ذخیرهٔ زمان مطالعه</button>
       </form>

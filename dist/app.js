@@ -382,9 +382,9 @@ document.addEventListener('change', event => {
 
 document.addEventListener('click', event => {
   if (event.target.closest('[data-open-log]')) openLog();
-  const preset = event.target.closest('[data-minutes]');
+  const preset = event.target.closest('[data-hours]');
   if (preset) {
-    $('log-duration').value = number.format(Number(preset.dataset.minutes));
+    $('log-duration').value = number.format(Number(preset.dataset.hours));
     clearDurationError();
   }
   const remove = event.target.closest('[data-remove-entry]');
@@ -400,9 +400,10 @@ document.addEventListener('click', event => {
 $('log-form').addEventListener('submit', event => {
   event.preventDefault();
   refreshDate();
-  const raw = $('log-duration').value.trim().replace(/[۰-۹٠-٩]/g, digit => String(digit.charCodeAt(0) & 15));
-  const minutes = Number(raw);
-  if (!/^\d{1,4}$/.test(raw) || minutes < 1 || minutes > 1440) {
+  const raw = $('log-duration').value.trim().replace(/[۰-۹٠-٩]/g, digit => String(digit.charCodeAt(0) & 15)).replace(/[٫,]/g, '.');
+  const hours = Number(raw);
+  const minutes = Math.round(hours * 60);
+  if (!/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(raw) || minutes < 1 || hours > 24) {
     $('duration-error').hidden = false;
     $('log-duration').setAttribute('aria-invalid', 'true');
     $('log-duration').focus();
