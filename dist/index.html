@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f8f7">
+    <meta name="description" content="برنامهٔ مطالعهٔ ۲۶ هفته‌ای ارشد کامپیوتر با چک‌لیست و ثبت زمان مطالعه">
+    <title>مسیر ارشد | برنامهٔ مطالعهٔ ۱۴۰۶</title>
+    <link rel="icon" href="./mark.svg" type="image/svg+xml">
+    <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="./site.css">
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body class="min-h-dvh bg-canvas text-ink antialiased">
+    <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+    <header class="border-b border-line bg-white">
+      <div class="shell flex min-h-[74px] items-center justify-between gap-3 py-3">
+        <a href="#today" class="flex min-h-11 items-center gap-3 rounded-xl">
+          <img src="./mark.svg" width="42" height="42" alt="">
+          <span><strong class="block text-lg leading-tight">مسیر ارشد</strong><span class="text-xs text-muted">مهندسی و علم کامپیوتر</span></span>
+        </a>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <p class="hidden items-center gap-2 text-sm text-muted sm:flex"><svg class="icon" aria-hidden="true"><use href="./icons.svg#calendar"></use></svg><span id="header-date"></span></p>
+          <button class="icon-button relative" id="reminder-button" type="button" aria-label="دیدن یادآوری امروز و فردا"><svg class="icon" aria-hidden="true"><use href="./icons.svg#bell"></use></svg><span id="reminder-dot" class="reminder-dot" hidden></span></button>
+        </div>
+      </div>
+    </header>
+    <div class="shell workspace gap-6 py-5 sm:py-7 lg:gap-8">
+      <aside class="sidebar min-w-0">
+        <nav aria-label="بخش‌های برنامه" class="nav-panel panel p-2">
+          <p class="mb-1 hidden px-3 pt-2 text-xs font-bold text-muted lg:block">فضای مطالعه</p>
+          <a class="nav-item" href="#today" data-route="today"><svg class="icon" aria-hidden="true"><use href="./icons.svg#grid"></use></svg>نمای امروز</a>
+          <a class="nav-item" href="#plan" data-route="plan"><svg class="icon" aria-hidden="true"><use href="./icons.svg#list"></use></svg>برنامهٔ ۲۶ هفته</a>
+          <a class="nav-item" href="#log" data-route="log"><svg class="icon" aria-hidden="true"><use href="./icons.svg#clock"></use></svg>سابقهٔ مطالعه</a>
+        </nav>
+        <div class="panel mt-4 hidden p-4 lg:block">
+          <span class="icon-tile bg-peach text-warm"><svg class="icon" aria-hidden="true"><use href="./icons.svg#flag"></use></svg></span>
+          <p class="mt-3 text-sm font-bold">آزمون ارشد ۱۴۰۶</p>
+          <p class="mt-1 text-sm text-muted">۱۶ و ۱۷ اردیبهشت ۱۴۰۶</p>
+          <p class="mt-3 border-t border-line pt-3 text-xs leading-6 text-muted">نوبت مجموعهٔ ۱۲۷۷ را از روی کارت آزمون بررسی کن.</p>
+        </div>
+      </aside>
+
+      <main id="main" tabindex="-1" class="min-w-0">
+        <div id="today-view">
+          <section class="hero relative isolate overflow-hidden px-5 py-6 sm:px-8 sm:py-8" aria-labelledby="today-title">
+            <div class="relative z-10 max-w-xl">
+              <span class="hero-label"><span class="size-1.5 rounded-full bg-[#fbd59c]" aria-hidden="true"></span><span id="hero-week"></span></span>
+              <h1 id="today-title" class="mt-4 text-[1.65rem] leading-tight font-extrabold text-white sm:text-4xl">برنامهٔ مطالعهٔ امروز</h1>
+              <p class="mt-3 max-w-md text-sm leading-7 text-[#d6e9e4]" id="hero-topic"></p>
+              <p class="mt-4 flex items-center gap-2 text-sm font-medium text-white"><svg class="icon" aria-hidden="true"><use href="./icons.svg#calendar"></use></svg><span id="hero-date"></span></p>
+            </div>
+            <img class="hero-art" src="./orbit.svg" width="350" height="230" alt="">
+          </section>
+
+          <div class="mt-5 grid grid-cols-3 gap-2 sm:gap-3" aria-label="آمار مطالعه">
+            <section class="stat panel"><span class="icon-tile bg-mint text-brand"><svg class="icon" aria-hidden="true"><use href="./icons.svg#clock"></use></svg></span><div><h2>مطالعهٔ امروز</h2><p id="today-minutes" class="stat-value"></p></div></section>
+            <section class="stat panel"><span class="icon-tile bg-peach text-warm"><svg class="icon" aria-hidden="true"><use href="./icons.svg#check-square"></use></svg></span><div><h2>کارهای امروز</h2><p id="today-completion" class="stat-value"></p></div></section>
+            <section class="stat panel"><span class="icon-tile bg-lilac text-violet-800"><svg class="icon" aria-hidden="true"><use href="./icons.svg#trend"></use></svg></span><div><h2>مطالعهٔ این هفته</h2><p id="week-minutes" class="stat-value"></p></div></section>
+          </div>
+          <button class="button-primary mt-4 w-full min-[850px]:hidden" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button>
+
+          <div class="dashboard-grid mt-5 grid items-start gap-5">
+            <section class="panel min-w-0" aria-labelledby="checklist-title">
+              <div class="panel-heading">
+                <div><h2 id="checklist-title" class="section-title">چک‌لیست امروز</h2><p class="mt-1 text-sm text-muted">هر نوبت را بعد از انجام تیک بزن.</p></div>
+                <span id="today-badge" class="pill"></span>
+              </div>
+              <div id="today-checklist" class="px-4 pb-4 sm:px-5"></div>
+            </section>
+            <div class="grid min-w-0 gap-5">
+              <section id="reminders" tabindex="-1" class="panel" aria-labelledby="tomorrow-title">
+                <div class="panel-heading"><div><h2 id="tomorrow-title" class="section-title">یادآوری فردا</h2><p id="tomorrow-date" class="mt-1 text-sm text-muted"></p></div><span class="icon-tile bg-peach text-warm"><svg class="icon" aria-hidden="true"><use href="./icons.svg#bell"></use></svg></span></div>
+                <ul id="tomorrow-list" class="px-4 pb-4 sm:px-5"></ul>
+              </section>
+              <section class="panel hidden p-4 sm:p-5 min-[850px]:block" aria-labelledby="log-quick-title">
+                <h2 id="log-quick-title" class="section-title">زمان مطالعه‌ات را ثبت کن</h2>
+                <p class="mt-1 mb-3 text-sm leading-7 text-muted">مدت واقعی مطالعه را وارد کن تا در سابقه بماند.</p>
+                <button class="button-primary w-full" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <div id="plan-view" hidden>
+          <div class="view-heading"><p class="eyebrow">تقویم مطالعه</p><h1>برنامهٔ ۲۶ هفته‌ای</h1><p>از ادامهٔ فصل دوم مدار منطقی تا مرور هفتهٔ آزمون.</p></div>
+          <section class="panel" aria-label="انتخاب هفته">
+            <div class="panel-heading flex-wrap">
+              <div class="min-w-0"><label for="week-select" class="section-title">هفتهٔ مطالعه</label><p id="selected-week-subject" class="mt-1 text-sm text-muted"></p></div>
+              <div class="flex items-center gap-2">
+                <button type="button" class="icon-button" id="prev-week" aria-label="هفتهٔ قبل"><svg class="icon rotate-180" aria-hidden="true"><use href="./icons.svg#chevron"></use></svg></button>
+                <select id="week-select" class="field max-w-48 min-w-0"></select>
+                <button type="button" class="icon-button" id="next-week" aria-label="هفتهٔ بعد"><svg class="icon" aria-hidden="true"><use href="./icons.svg#chevron"></use></svg></button>
+              </div>
+            </div>
+            <div id="week-progress" class="px-4 pb-4 text-sm text-muted sm:px-5" aria-live="polite"></div>
+          </section>
+          <div id="week-days" class="mt-5 grid gap-4"></div>
+        </div>
+
+        <div id="log-view" hidden>
+          <div class="view-heading"><p class="eyebrow">گزارش شخصی</p><h1>سابقهٔ مطالعه</h1><p>زمان‌های ثبت‌شده و مجموع مطالعه را اینجا ببین.</p></div>
+          <section class="panel">
+            <div class="panel-heading flex-wrap"><div><h2 class="section-title">زمان‌های ثبت‌شده</h2><p id="log-total" class="mt-1 text-sm text-muted"></p></div><button class="button-primary" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button></div>
+            <div id="log-rows" class="px-4 pb-4 sm:px-5"></div>
+          </section>
+        </div>
+        <p id="storage-warning" class="mt-4 rounded-xl bg-peach p-3 text-sm text-warm" role="alert" hidden>مرورگر اجازهٔ ذخیره‌سازی نداد. تغییرها ممکن است پس از بستن صفحه از بین بروند.</p>
+      </main>
+    </div>
+    <dialog id="log-dialog" aria-labelledby="log-title" class="panel p-0">
+      <form id="log-form" class="p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-3">
+          <div><h2 id="log-title" class="text-xl font-extrabold">ثبت زمان مطالعه</h2><p class="mt-1 text-sm text-muted">یک نوبت مطالعه را به سابقه اضافه کن.</p></div>
+          <button id="close-log" type="button" class="icon-button" aria-label="بستن"><svg class="icon" aria-hidden="true"><use href="./icons.svg#x"></use></svg></button>
+        </div>
+        <p id="log-date" class="mt-4 rounded-xl bg-canvas px-3 py-2 text-sm text-muted"></p>
+        <label for="log-subject" class="mt-4 mb-1.5 block text-sm font-bold">درس</label>
+        <select id="log-subject" name="subject" class="field w-full" required></select>
+        <label for="log-duration" class="mt-4 mb-1.5 block text-sm font-bold">مدت مطالعه به دقیقه</label>
+        <input id="log-duration" name="duration" type="text" inputmode="numeric" maxlength="4" class="field w-full" placeholder="مثلاً ۷۰" aria-describedby="duration-hint duration-error" required>
+        <p id="duration-hint" class="mt-1 text-xs leading-6 text-muted">از ۱ تا ۱۴۴۰ دقیقه. عدد فارسی و انگلیسی پذیرفته می‌شود.</p>
+        <p id="duration-error" role="alert" class="mt-1 text-sm text-red-800" hidden>مدت را به‌صورت یک عدد صحیح بین ۱ و ۱۴۴۰ دقیقه وارد کن.</p>
+        <div class="mt-2 flex flex-wrap gap-2" aria-label="مدت‌های پیشنهادی">
+          <button type="button" data-minutes="30" class="button-secondary">۳۰ دقیقه</button>
+          <button type="button" data-minutes="50" class="button-secondary">۵۰ دقیقه</button>
+          <button type="button" data-minutes="70" class="button-secondary">۷۰ دقیقه</button>
+        </div>
+        <button type="submit" class="button-primary mt-5 w-full">ذخیرهٔ زمان مطالعه</button>
+      </form>
+    </dialog>
+    <p id="message" class="toast" role="status" aria-live="polite" hidden></p>
+  </body>
+</html>

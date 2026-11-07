@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 230" fill="none">
+  <defs>
+    <pattern id="dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#A6DBC8" opacity=".4"/></pattern>
+  </defs>
+  <path d="M16 25h294v180H16z" fill="url(#dots)" opacity=".7"/>
+  <g stroke="#8AD3BC" stroke-width="1" opacity=".45">
+    <circle cx="166" cy="116" r="75"/><circle cx="166" cy="116" r="95" stroke-dasharray="3 7"/>
+    <path d="M38 63h47l28 28m-87 64h56l29-27m112-46 24-23h53m-77 79 33 29h54M166 18v40m0 118v38m-55-98H55m166 0h55"/>
+  </g>
+  <g fill="#FBD59C"><circle cx="38" cy="63" r="3"/><circle cx="256" cy="167" r="3"/><circle cx="201" cy="28" r="3"/><circle cx="113" cy="176" r="2.5"/></g>
+  <g fill="#A1DDC8"><circle cx="26" cy="155" r="2.5"/><circle cx="300" cy="59" r="3"/><circle cx="275" cy="116" r="2.5"/><circle cx="166" cy="214" r="2.5"/></g>
+  <rect x="111" y="60" width="110" height="110" rx="25" fill="#195D50" stroke="#82C4B0"/>
+  <rect x="122" y="71" width="88" height="88" rx="17" fill="#256D5C" stroke="#89C8B7" stroke-opacity=".4"/>
+  <path d="M139 96c9-1 18 2 27 8 9-6 18-9 27-8v37c-9-1-18 2-27 8-9-6-18-9-27-8V96Zm27 8v37" stroke="#E0F2EA" stroke-width="2.3" stroke-linejoin="round"/>
+  <path d="m174 119 4 4 8-9" stroke="#FBD59C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
