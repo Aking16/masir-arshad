@@ -1,4 +1,4 @@
-import { plan } from './plan.js';
+import { plan } from './plan.js?v=2';
 
 const $ = id => document.getElementById(id);
 const storageKey = 'masir-arshad-1406.v1';
@@ -65,7 +65,11 @@ function saveState() {
 
 function tasksFor(day) {
   if (!day || day.rest || day.exam) return [];
-  return day.tasks.flatMap((text, index) => text ? [{ text, index, id: taskId(day.date, index) }] : []);
+  return day.tasks.flatMap((text, index) => {
+    if (!text) return [];
+    const id = taskId(day.date, index) + (day.revised?.includes(index) ? '-v2' : '');
+    return [{ text, index, id }];
+  });
 }
 
 function emptyText(day) {
