@@ -83,3 +83,35 @@
 @media (min-width: 1024px) { .workspace { grid-template-columns: 206px minmax(0, 1fr); } .sidebar { position: sticky; top: 1.5rem; align-self: start; } }
 @media (max-width: 650px) { .hero-art { opacity: .33; width: 43%; inset-inline-end: -6%; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+.plan-hero { @apply relative isolate overflow-hidden rounded-[1.35rem] px-5 py-7 text-white sm:px-8 sm:py-10; background: #18365f; }
+.plan-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .2; background: repeating-linear-gradient(-9deg, transparent 0 48px, #8aa9d8 49px 50px); }
+.plan-hero h1 { @apply my-2 text-2xl font-extrabold sm:text-4xl; }
+.plan-hero p { @apply text-sm leading-7; color: #e0ebfa; }
+.plan-week-nav { @apply my-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 p-3 sm:mx-auto sm:max-w-xl; }
+.plan-week-nav button { @apply px-2 sm:px-4; }
+.plan-stats { @apply mx-4 mb-4 grid grid-cols-3 gap-2 sm:mx-5 sm:mb-5 sm:gap-3; }
+.plan-stats div { @apply rounded-xl border px-2 py-2.5 sm:px-3; background: #f4f7fc; border-color: #dce5f0; }
+.plan-stats dt { @apply text-xs leading-5 text-muted; }
+.plan-stats dd { @apply mt-1 text-sm font-bold sm:text-base; }
+.plan-filters { @apply flex flex-wrap gap-2 px-4 pb-4 sm:px-5; }
+.plan-filters button { @apply min-h-11 rounded-full border px-3 text-sm font-bold; border-color: #dce5f0; color: #24479e; }
+.plan-filters button:hover { background: #eef3fc; }
+.plan-filters button[aria-pressed='true'] { color: white; background: #3159bd; border-color: #3159bd; }
+.plan-courses { @apply grid gap-3 px-4 pb-4 sm:px-5 sm:pb-5; }
+.plan-course { @apply overflow-hidden rounded-xl border; border-color: #dce5f0; }
+.plan-course summary { @apply min-h-11 px-3 py-3 text-sm leading-6; background: #eff4fb; color: #18365f; }
+.plan-course summary span { @apply ms-2 text-xs text-muted; }
+.plan-course-body { @apply grid gap-2 p-2 sm:p-3; }
+.plan-course .task-row { @apply m-0; }
+.activity-tag { @apply ms-auto shrink-0 rounded-full px-2 py-1 text-xs font-bold; }
+.activity-read { color: #24479e; background: #e8effc; }
+.activity-test { color: #854e1e; background: #fbefd9; }
+.activity-review { color: #146354; background: #e0f2eb; }
+@media print {
+  .print-plan > header, .print-plan .sidebar, .print-plan .plan-week-nav, .print-plan #week-filters,
+  .print-plan #print-week, .print-plan .skip-link, .print-plan .toast { display: none !important; }
+  .print-plan .workspace { display: block; padding: 0; }
+  .print-plan .plan-hero, .print-plan .plan-hero p { color: #18365f; background: white; }
+  .print-plan .task-row, .print-plan .plan-course summary { break-inside: avoid; }
+}

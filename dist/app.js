@@ -12,6 +12,8 @@ const isoFormat = new Intl.DateTimeFormat('en-CA', {
   timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit',
 });
 const slots = ['۱۰:۰۰ تا ۱۱:۱۰', '۱۱:۲۰ تا ۱۲:۱۰', '۱۲:۲۰ تا ۱۳:۰۰'];
+const slotMinutes = [70, 50, 40];
+const activityNames = { read: 'مطالعه', test: 'تست', review: 'مرور' };
 const subjects = ['مدار منطقی', 'مبانی برنامه‌سازی', 'جبر خطی', 'معماری کامپیوتر', 'داده‌ساختارها', 'الگوریتم‌ها', 'ریاضیات گسسته', 'آمار و احتمال', 'نظریهٔ زبان‌ها و ماشین‌ها', 'سیستم‌های عامل', 'هوش مصنوعی', 'آزمون و مرور ترکیبی'];
 const routes = ['today', 'plan', 'log'];
 const days = new Map(plan.flatMap((week, weekIndex) => week.days.map((day, dayIndex) => [day.date, {
@@ -41,6 +43,7 @@ let state = { checked: new Set(), entries: [] };
 let today = dayKey();
 let weekIndex = days.get(today)?.week ?? (today < plan[0].days[0].date ? 0 : plan.length - 1);
 let route = 'today';
+let weekFilter = 'all';
 let toastTimeout;
 
 function readState() {
@@ -116,16 +119,21 @@ function taskList(container, day) {
     return;
   }
   for (const task of tasks) {
+    container.append(taskRow(task, slots[task.index]));
+  }
+}
+
+function taskRow(task, context, type) {
     const label = make('label', 'task-row');
     const input = make('input', 'task-box');
     input.type = 'checkbox';
     input.checked = state.checked.has(task.id);
     input.dataset.task = task.id;
     const copy = make('span', 'min-w-0');
-    copy.append(make('span', 'slot', slots[task.index]), make('span', 'task-label', task.text));
+    copy.append(make('span', 'slot', context), make('span', 'task-label', task.text));
     label.append(input, copy);
-    container.append(label);
-  }
+    if (type) label.append(make('span', `activity-tag activity-${type}`, activityNames[type]));
+    return label;
 }
 
 function renderToday() {
@@ -175,27 +183,70 @@ function updateTodayStats() {
 function renderWeek() {
   const week = plan[weekIndex];
   $('week-select').value = String(weekIndex);
-  $('selected-week-subject').textContent = week.subject;
+  $('selected-week-title').textContent = `هفتهٔ ${number.format(weekIndex + 1)}`;
+  $('selected-week-subject').textContent = `${week.range} · ${week.subject}`;
+  $('week-position').textContent = `${number.format(weekIndex + 1)} از ${number.format(plan.length)}`;
   $('prev-week').disabled = weekIndex === 0;
   $('next-week').disabled = weekIndex === plan.length - 1;
-  $('week-days').replaceChildren();
+  const courses = new Map();
+  const notes = [];
+  let count = 0;
+  let minutes = 0;
   for (const { date } of week.days) {
     const day = days.get(date);
-    const card = make('section', 'panel min-w-0');
-    const heading = make('div', 'panel-heading');
-    heading.append(make('h2', 'section-title', dateLabel(date)));
-    if (date === today) heading.append(make('span', 'pill', 'امروز'));
-    const list = make('div', 'px-4 pb-4 sm:px-5');
-    taskList(list, day);
-    card.append(heading, list);
-    $('week-days').append(card);
+    const tasks = tasksFor(day);
+    if (!tasks.length) notes.push(make('p', '', `${dateLabel(date)} · ${emptyText(day)}`));
+    for (const task of tasks) {
+      const { subject, type } = classifyTask(task, week.subject);
+      const length = slotMinutes[task.index];
+      count += 1;
+      minutes += length;
+      if (weekFilter !== 'all' && weekFilter !== type) continue;
+      if (!courses.has(subject)) courses.set(subject, []);
+      courses.get(subject).push({ task, date, type, length });
+    }
   }
+  const list = $('week-days');
+  list.replaceChildren();
+  if (!courses.size) list.append(make('p', 'empty', 'برای این فیلتر فعالیتی در هفته وجود ندارد.'));
+  for (const [subject, activities] of courses) {
+    const course = make('details', 'plan-course');
+    course.open = true;
+    const title = make('summary');
+    title.append(make('strong', '', subject), make('span', '', `${number.format(activities.length)} فعالیت · ${duration(activities.reduce((sum, item) => sum + item.length, 0))}`));
+    const body = make('div', 'plan-course-body');
+    for (const { task, date, type, length } of activities) {
+      body.append(taskRow(task, `${dateLabel(date)} · ${slots[task.index]} · ${duration(length)}`, type));
+    }
+    course.append(title, body);
+    list.append(course);
+  }
+  $('week-notes').replaceChildren(...notes);
+  $('planned-time').textContent = duration(minutes);
+  $('planned-count').textContent = number.format(count);
+  for (const button of $('week-filters').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.filter === weekFilter));
   updateWeekProgress();
+}
+
+const courseAliases = new Map([
+  ['برنامه‌سازی', 'مبانی برنامه‌سازی'], ['داده‌ساختار', 'داده‌ساختارها'], ['گسسته', 'ریاضیات گسسته'],
+  ['معماری', 'معماری کامپیوتر'], ['نظریهٔ زبان‌ها', 'نظریهٔ زبان‌ها و ماشین‌ها'], ['آمار', 'آمار و احتمال'],
+  ['الگوریتم', 'الگوریتم‌ها'], ['سیستم عامل', 'سیستم‌های عامل'], ['ریاضی', 'مرور ریاضی'],
+]);
+
+function classifyTask(task, mainSubject) {
+  const [prefix, ...parts] = task.text.split('،');
+  const explicit = courseAliases.get(prefix) || (subjects.includes(prefix) ? prefix : null);
+  const topic = (parts.length && (explicit || prefix === mainSubject) ? parts.join('،') : task.text).trim();
+  const assessment = /^(آزمون|\d|[۰-۹]+ تا [۰-۹]+ تست ترکیبی)/.test(topic) && /آزمون|زمان‌دار|تست ترکیبی/.test(topic);
+  const type = /مرور|تحلیل (?:آزمون|پاسخ)|حل دوباره|ترمیم|ثبت (?:اولویت|نتیجه)|انتخاب یک مبحث/.test(topic) && !assessment
+    ? 'review' : assessment || task.index === 1 || /^(?:تست|حل تست)/.test(topic) ? 'test' : 'read';
+  return { type, subject: explicit || (assessment ? 'آزمون و مرور ترکیبی' : task.index === 2 ? 'مرور و جمع‌بندی' : mainSubject) };
 }
 
 function updateWeekProgress() {
   const tasks = plan[weekIndex].days.flatMap(({ date }) => tasksFor(days.get(date)));
-  $('week-progress').textContent = `پیشرفت چک‌لیست هفته: ${progressText(tasks)}`;
+  $('week-progress').textContent = progressText(tasks);
 }
 
 function renderLog() {
@@ -279,12 +330,31 @@ function openLog() {
   $('log-duration').focus();
 }
 
-for (const [index, week] of plan.entries()) {
-  $('week-select').add(new Option(`هفتهٔ ${number.format(index + 1)} · ${week.range}`, String(index)));
+for (let index = 0; index < plan.length; index += 1) {
+  $('week-select').add(new Option(`هفتهٔ ${number.format(index + 1)}`, String(index)));
 }
 for (const subject of subjects) $('log-subject').add(new Option(subject, subject));
 
 $('week-select').addEventListener('change', event => { weekIndex = Number(event.target.value); renderWeek(); });
+$('week-filters').addEventListener('click', event => {
+  const button = event.target.closest('button[data-filter]');
+  if (!button) return;
+  weekFilter = button.dataset.filter;
+  renderWeek();
+});
+$('print-week').addEventListener('click', () => window.print());
+let collapsedForPrint = [];
+window.addEventListener('beforeprint', () => {
+  if (route !== 'plan') return;
+  document.body.classList.add('print-plan');
+  collapsedForPrint = [...$('week-days').querySelectorAll('details:not([open])')];
+  collapsedForPrint.forEach(course => { course.open = true; });
+});
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('print-plan');
+  collapsedForPrint.forEach(course => { course.open = false; });
+  collapsedForPrint = [];
+});
 $('prev-week').addEventListener('click', () => { weekIndex -= 1; renderWeek(); if (!$('prev-week').disabled) return; $('week-select').focus(); });
 $('next-week').addEventListener('click', () => { weekIndex += 1; renderWeek(); if (!$('next-week').disabled) return; $('week-select').focus(); });
 $('close-log').addEventListener('click', () => $('log-dialog').close());
