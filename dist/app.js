@@ -1,4 +1,4 @@
-import { plan } from './plan.js?v=2';
+import { plan } from './plan.js?v=4';
 
 const $ = id => document.getElementById(id);
 const storageKey = 'masir-arshad-1406.v1';
@@ -14,7 +14,8 @@ const isoFormat = new Intl.DateTimeFormat('en-CA', {
 const slots = ['۱۰:۰۰ تا ۱۱:۱۰', '۱۱:۲۰ تا ۱۲:۱۰', '۱۲:۲۰ تا ۱۳:۰۰'];
 const slotMinutes = [70, 50, 40];
 const activityNames = { read: 'مطالعه', test: 'تست', review: 'مرور' };
-const subjects = ['مدار منطقی', 'مبانی برنامه‌سازی', 'جبر خطی', 'معماری کامپیوتر', 'داده‌ساختارها', 'الگوریتم‌ها', 'ریاضیات گسسته', 'آمار و احتمال', 'نظریهٔ زبان‌ها و ماشین‌ها', 'سیستم‌های عامل', 'هوش مصنوعی', 'آزمون و مرور ترکیبی'];
+const subjects = ['مدار منطقی', 'مبانی کامپیوتر و برنامه‌سازی', 'معماری کامپیوتر', 'داده‌ساختارها و الگوریتم‌ها', 'نظریهٔ زبان‌ها و ماشین‌ها', 'سیستم‌های عامل', 'هوش مصنوعی', 'آزمون و مرور ترکیبی'];
+const historicalSubjects = ['مبانی برنامه‌سازی', 'جبر خطی', 'داده‌ساختارها', 'الگوریتم‌ها', 'ریاضیات گسسته', 'آمار و احتمال'];
 const routes = ['today', 'plan', 'log'];
 const days = new Map(plan.flatMap((week, weekIndex) => week.days.map((day, dayIndex) => [day.date, {
   ...day, week: weekIndex, rest: dayIndex === 6 && weekIndex < 25, exam: weekIndex === 25 && dayIndex >= 5,
@@ -35,7 +36,7 @@ function parseState(serialized) {
   const checked = Array.isArray(data.checked) ? data.checked.filter(key => typeof key === 'string') : [];
   const entries = Array.isArray(data.entries) ? data.entries.filter(entry => entry &&
     typeof entry.id === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.date) && Number.isFinite(midnight(entry.date)) &&
-    subjects.includes(entry.subject) && Number.isInteger(entry.minutes) && entry.minutes >= 1 && entry.minutes <= 1440) : [];
+    (subjects.includes(entry.subject) || historicalSubjects.includes(entry.subject)) && Number.isInteger(entry.minutes) && entry.minutes >= 1 && entry.minutes <= 1440) : [];
   return { checked: new Set(checked), entries };
 }
 
@@ -70,7 +71,8 @@ function tasksFor(day) {
   if (!day || day.rest || day.exam) return [];
   return day.tasks.flatMap((text, index) => {
     if (!text) return [];
-    const id = taskId(day.date, index) + (day.revised?.includes(index) ? '-v2' : '');
+    const suffix = day.revisedSpecialty?.includes(index) ? '-v4' : day.revised?.includes(index) ? '-v2' : '';
+    const id = taskId(day.date, index) + suffix;
     return [{ text, index, id }];
   });
 }
@@ -229,9 +231,10 @@ function renderWeek() {
 }
 
 const courseAliases = new Map([
-  ['برنامه‌سازی', 'مبانی برنامه‌سازی'], ['داده‌ساختار', 'داده‌ساختارها'], ['گسسته', 'ریاضیات گسسته'],
-  ['معماری', 'معماری کامپیوتر'], ['نظریهٔ زبان‌ها', 'نظریهٔ زبان‌ها و ماشین‌ها'], ['آمار', 'آمار و احتمال'],
-  ['الگوریتم', 'الگوریتم‌ها'], ['سیستم عامل', 'سیستم‌های عامل'], ['ریاضی', 'مرور ریاضی'],
+  ['برنامه‌سازی', 'مبانی کامپیوتر و برنامه‌سازی'], ['مبانی برنامه‌سازی', 'مبانی کامپیوتر و برنامه‌سازی'],
+  ['داده‌ساختار', 'داده‌ساختارها و الگوریتم‌ها'], ['داده‌ساختارها', 'داده‌ساختارها و الگوریتم‌ها'],
+  ['الگوریتم', 'داده‌ساختارها و الگوریتم‌ها'], ['الگوریتم‌ها', 'داده‌ساختارها و الگوریتم‌ها'],
+  ['معماری', 'معماری کامپیوتر'], ['نظریهٔ زبان‌ها', 'نظریهٔ زبان‌ها و ماشین‌ها'], ['سیستم عامل', 'سیستم‌های عامل'],
 ]);
 
 function classifyTask(task, mainSubject) {
@@ -241,7 +244,7 @@ function classifyTask(task, mainSubject) {
   const assessment = /^(آزمون|\d|[۰-۹]+ تا [۰-۹]+ تست ترکیبی)/.test(topic) && /آزمون|زمان‌دار|تست ترکیبی/.test(topic);
   const type = /مرور|تحلیل (?:آزمون|پاسخ)|حل دوباره|ترمیم|ثبت (?:اولویت|نتیجه)|انتخاب یک مبحث/.test(topic) && !assessment
     ? 'review' : assessment || task.index === 1 || /^(?:تست|حل تست)/.test(topic) ? 'test' : 'read';
-  return { type, subject: explicit || (assessment ? 'آزمون و مرور ترکیبی' : task.index === 2 ? 'مرور و جمع‌بندی' : mainSubject) };
+  return { type, subject: explicit || (assessment ? 'آزمون و مرور ترکیبی' : task.index === 2 ? 'مرور و جمع‌بندی' : courseAliases.get(mainSubject) || mainSubject) };
 }
 
 function updateWeekProgress() {
@@ -323,7 +326,8 @@ function openLog() {
   refreshDate();
   $('log-form').reset();
   clearDurationError();
-  const subject = plan[days.get(today)?.week]?.subject;
+  const plannedSubject = plan[days.get(today)?.week]?.subject;
+  const subject = courseAliases.get(plannedSubject) || plannedSubject;
   if (subjects.includes(subject)) $('log-subject').value = subject;
   $('log-date').textContent = dateLabel(today);
   $('log-dialog').showModal();
