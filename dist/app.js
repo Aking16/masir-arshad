@@ -219,7 +219,7 @@ function updateWeekProgress(all = weeks[weekIndex].courses.flatMap(course => cou
 }
 
 function renderLog() {
-  $('log-total').textContent = 'مجموع زمان ثبت‌شده: ' + duration(sumMinutes(state.entries));
+  $('log-total').textContent = duration(sumMinutes(state.entries));
   const list = $('log-rows');
   list.replaceChildren();
   if (!state.entries.length) list.append(make('p', 'empty', 'هنوز زمانی ثبت نشده است.'));

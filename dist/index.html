@@ -8,8 +8,8 @@
     <title>مسیر ارشد | برنامهٔ مطالعهٔ ۱۴۰۶</title>
     <link rel="icon" href="./mark.svg" type="image/svg+xml">
     <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="./site.css?v=9">
-    <script src="./app.js?v=12" type="module"></script>
+    <link rel="stylesheet" href="./site.css?v=13">
+    <script src="./app.js?v=13" type="module"></script>
   </head>
   <body class="min-h-dvh bg-canvas text-ink antialiased">
     <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
@@ -115,19 +115,22 @@
         </div>
 
         <div id="log-view" hidden>
-          <div class="mb-4 grid grid-cols-2 gap-2">
+          <header class="mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="view-heading"><p class="eyebrow">گزارش شخصی</p><h1>سابقهٔ مطالعه</h1></div>
+              <div class="flex flex-wrap justify-end gap-2 ms-auto">
+                <button id="backup-import" type="button" class="button-secondary"><svg class="icon" aria-hidden="true"><use href="./icons.svg?v=13#upload"></use></svg>ورود فایل</button>
+                <button id="backup-export" type="button" class="button-secondary"><svg class="icon" aria-hidden="true"><use href="./icons.svg?v=13#download"></use></svg>خروجی گرفتن</button>
+                <input id="backup-file" type="file" accept=".json,application/json" hidden>
+              </div>
+            </div>
+            <p id="backup-status" class="mt-2 text-sm" role="status" aria-atomic="true"></p>
+          </header>
+          <div class="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <section class="panel p-4"><h2 class="text-sm font-bold">مجموع مطالعه</h2><p id="log-total" class="mt-2 text-lg font-bold"></p></section>
             <section class="panel p-4"><h2 class="text-sm font-bold">مطالعهٔ این هفته</h2><p id="log-week-total" class="mt-2 text-lg font-bold"></p></section>
             <section class="panel p-4"><h2 class="text-sm font-bold">مطالعهٔ این ماه</h2><p id="log-month-total" class="mt-2 text-lg font-bold"></p></section>
           </div>
-          <section class="panel mb-4 p-4" aria-label="انتقال داده‌ها">
-            <div class="flex flex-wrap gap-2">
-              <button id="backup-export" type="button" class="button-secondary">خروجی گرفتن</button>
-              <button id="backup-import" type="button" class="button-secondary">ورود فایل</button>
-              <input id="backup-file" type="file" accept=".json,application/json" hidden>
-            </div>
-            <p id="backup-status" class="mt-2 text-sm" role="status" aria-atomic="true"></p>
-          </section>
-          <div class="view-heading"><p class="eyebrow">گزارش شخصی</p><h1>سابقهٔ مطالعه</h1><p>زمان‌های ثبت‌شده و مجموع مطالعه را اینجا ببین.</p></div>
           <section class="panel mb-4 p-4 sm:p-5" aria-labelledby="chart-title">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <h2 id="chart-title" class="section-title">زمان مطالعه و برنامه</h2>
@@ -161,7 +164,7 @@
             </details>
           </section>
           <section class="panel">
-            <div class="panel-heading flex-wrap"><div><h2 class="section-title">زمان‌های ثبت‌شده</h2><p id="log-total" class="mt-1 text-sm text-muted"></p></div><button class="button-primary" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button></div>
+            <div class="panel-heading flex-wrap"><h2 class="section-title">زمان‌های ثبت‌شده</h2><button class="button-primary" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button></div>
             <div id="log-rows" class="px-4 pb-4 sm:px-5"></div>
           </section>
         </div>
