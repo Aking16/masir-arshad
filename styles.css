@@ -37,7 +37,7 @@
   .shell { @apply mx-auto w-full max-w-[1336px] px-4 sm:px-6 lg:px-8; }
   .workspace { @apply grid; }
   .panel { @apply rounded-[1.15rem] border border-line bg-white; }
-  .nav-panel { @apply grid grid-cols-3 gap-1 lg:grid-cols-1; }
+  .nav-panel { @apply grid grid-cols-4 gap-1 lg:grid-cols-1; }
   .nav-item { @apply flex min-h-11 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-xs font-bold text-muted transition-colors hover:bg-canvas sm:flex-row sm:gap-2 lg:justify-start lg:px-3 lg:text-sm; }
   .nav-item[aria-current='page'] { @apply bg-mint text-brand; }
   .icon { @apply size-5 shrink-0; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
@@ -114,4 +114,26 @@
   .print-plan .workspace { display: block; padding: 0; }
   .print-plan .plan-hero, .print-plan .plan-hero p { color: #18365f; background: white; }
   .print-plan .task-row, .print-plan .plan-course summary { break-inside: avoid; }
+}
+.chapter-task { @apply min-w-0; }
+.chapter-task + .chapter-task { @apply mt-2; }
+.chapter-task .button-secondary { @apply mt-1; }
+#chapter-dialog { inline-size: min(calc(100% - 2rem), 34rem); margin: auto; max-block-size: calc(100dvh - 2rem); }
+#chapter-dialog::backdrop { background: #0929239c; }
+.date-fields label { @apply min-w-0 text-xs text-muted; }
+.date-fields select { @apply px-1.5 text-sm; }
+.chart-legend { @apply my-3 flex flex-wrap gap-4 text-sm text-muted; }
+.chart-legend span { @apply inline-flex items-center gap-2; }
+.chart-legend i { @apply size-3 rounded-sm; }
+.chart-planned { background: #5579b8; }
+.chart-actual { background: #08796a; }
+.chart-scroll { @apply overflow-x-auto; }
+.study-chart { @apply flex min-w-max gap-2 border-b border-line px-1 pt-2; }
+.chart-day { @apply grid w-12 gap-1 text-center text-xs text-muted; }
+.chart-bars { @apply flex h-32 items-end justify-center gap-1 border-b border-line; }
+.chart-bars i { @apply w-3 rounded-t-sm; }
+.study-table { @apply mt-2 w-full text-right text-sm; }
+.study-table th, .study-table td { @apply border-b border-line p-2; }
+@media print {
+  .print-plan .chapter-task button, .print-plan #backlog, .print-plan #chapter-bank { display: none !important; }
 }

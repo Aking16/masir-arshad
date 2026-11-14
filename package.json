@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "python -m http.server 5177 --bind 127.0.0.1 --directory dist",
     "build": "tailwindcss -i ./styles.css -o ./dist/site.css --minify"
   },
   "devDependencies": {

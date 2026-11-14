@@ -8,8 +8,8 @@
     <title>مسیر ارشد | برنامهٔ مطالعهٔ ۱۴۰۶</title>
     <link rel="icon" href="./mark.svg" type="image/svg+xml">
     <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="./site.css?v=3">
-    <script src="./app.js?v=5" type="module"></script>
+    <link rel="stylesheet" href="./site.css?v=9">
+    <script src="./app.js?v=10" type="module"></script>
   </head>
   <body class="min-h-dvh bg-canvas text-ink antialiased">
     <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
@@ -30,15 +30,20 @@
         <nav aria-label="بخش‌های برنامه" class="nav-panel panel p-2">
           <p class="mb-1 hidden px-3 pt-2 text-xs font-bold text-muted lg:block">فضای مطالعه</p>
           <a class="nav-item" href="#today" data-route="today"><svg class="icon" aria-hidden="true"><use href="./icons.svg#grid"></use></svg>نمای امروز</a>
-          <a class="nav-item" href="#plan" data-route="plan"><svg class="icon" aria-hidden="true"><use href="./icons.svg#list"></use></svg>برنامهٔ ۲۶ هفته</a>
+          <a class="nav-item" href="#plan" data-route="plan"><svg class="icon" aria-hidden="true"><use href="./icons.svg#calendar"></use></svg>تقویم ثابت</a>
+          <a class="nav-item" href="#adaptive" data-route="adaptive"><svg class="icon" aria-hidden="true"><use href="./icons.svg#list"></use></svg>نوبت‌های شخصی</a>
           <a class="nav-item" href="#log" data-route="log"><svg class="icon" aria-hidden="true"><use href="./icons.svg#clock"></use></svg>سابقهٔ مطالعه</a>
         </nav>
-        <div class="panel mt-4 hidden p-4 lg:block">
+        <div class="panel mt-4 p-4">
           <span class="icon-tile bg-peach text-warm"><svg class="icon" aria-hidden="true"><use href="./icons.svg#flag"></use></svg></span>
           <p class="mt-3 text-sm font-bold">آزمون ارشد ۱۴۰۶</p>
           <p class="mt-1 text-sm text-muted">۱۶ و ۱۷ اردیبهشت ۱۴۰۶</p>
           <p class="mt-3 border-t border-line pt-3 text-xs leading-6 text-muted">نوبت مجموعهٔ ۱۲۷۷ را از روی کارت آزمون بررسی کن.</p>
         </div>
+        <section class="panel mt-3 p-4" aria-labelledby="exam-countdown-title">
+          <h2 id="exam-countdown-title" class="text-sm font-bold text-muted">روزشمار آزمون ارشد ۱۴۰۶</h2>
+          <p id="exam-countdown-status" class="mt-1 text-xl font-extrabold tabular-nums text-brand" role="status" aria-atomic="true"></p>
+        </section>
       </aside>
 
       <main id="main" tabindex="-1" class="min-w-0">
@@ -71,7 +76,7 @@
             <div class="grid min-w-0 gap-5">
               <section id="reminders" tabindex="-1" class="panel" aria-labelledby="tomorrow-title">
                 <div class="panel-heading"><div><h2 id="tomorrow-title" class="section-title">یادآوری فردا</h2><p id="tomorrow-date" class="mt-1 text-sm text-muted"></p></div><span class="icon-tile bg-peach text-warm"><svg class="icon" aria-hidden="true"><use href="./icons.svg#bell"></use></svg></span></div>
-                <ul id="tomorrow-list" class="px-4 pb-4 sm:px-5"></ul>
+                <div id="tomorrow-list" class="px-4 pb-4 sm:px-5"></div>
               </section>
               <section class="panel hidden p-4 sm:p-5 min-[850px]:block" aria-labelledby="log-quick-title">
                 <h2 id="log-quick-title" class="section-title">زمان مطالعه‌ات را ثبت کن</h2>
@@ -83,7 +88,7 @@
         </div>
 
         <div id="plan-view" hidden>
-          <header class="plan-hero"><p>برنامه‌ریزی شخصی کنکور</p><h1>برنامهٔ هفتگی من</h1><p>فعالیت‌های هر هفته را به تفکیک درس، نوع فعالیت و زمان ببین.</p></header>
+          <header class="plan-hero"><p>برنامهٔ ۱۸ هفته‌ای فایل‌ها</p><h1>تقویم ثابت</h1><p>فعالیت‌ها و ساعت‌های هر هفته مطابق فایل مرجع نمایش داده می‌شوند.</p></header>
           <nav class="plan-week-nav panel" aria-label="انتخاب هفته">
             <button type="button" class="button-secondary" id="prev-week">هفتهٔ قبل</button>
             <select id="week-select" class="field w-full min-w-0" aria-label="انتخاب هفته"></select>
@@ -94,18 +99,37 @@
             <dl class="plan-stats"><div><dt>زمان برنامه‌ریزی‌شده</dt><dd id="planned-time"></dd></div><div><dt>تعداد فعالیت‌ها</dt><dd id="planned-count"></dd></div><div><dt>پیشرفت هفته</dt><dd id="week-progress" aria-live="polite"></dd></div></dl>
           </section>
           <section class="panel mt-4" aria-labelledby="week-activities-title">
-            <div class="panel-heading flex-wrap"><div><h2 id="week-activities-title" class="section-title">فعالیت‌های این هفته</h2><p class="mt-1 text-sm text-muted">درس‌ها را باز کن و نوبت‌های انجام‌شده را تیک بزن.</p></div><button type="button" id="print-week" class="button-secondary">چاپ یا ذخیرهٔ PDF</button></div>
+            <div class="panel-heading flex-wrap"><div><h2 id="week-activities-title" class="section-title">فعالیت‌های این هفته</h2><p class="mt-1 text-sm text-muted">تیک هر ردیف برای تکمیل کل فعالیت است.</p></div><button type="button" id="print-week" class="button-secondary">چاپ یا ذخیرهٔ PDF</button></div>
             <div id="week-filters" class="plan-filters" role="group" aria-label="فیلتر فعالیت‌ها">
               <button type="button" data-filter="all" aria-pressed="true">همه</button><button type="button" data-filter="read" aria-pressed="false">مطالعه</button><button type="button" data-filter="test" aria-pressed="false">تست</button><button type="button" data-filter="review" aria-pressed="false">مرور</button>
             </div>
             <div id="week-days" class="plan-courses"></div>
           </section>
           <div id="week-notes" class="mt-4 text-sm text-muted"></div>
-          <p class="mt-5 text-sm text-muted">این برنامه هفت درس تخصصی را پوشش می‌دهد. <a class="text-brand underline" href="https://cshub.ir/computer-konkur-sections/">بودجه‌بندی فصل‌ها در CSHub</a></p>
+        </div>
+
+        <div id="adaptive-view" hidden>
+          <div class="view-heading"><h1>نوبت‌های شخصی</h1><p>هر نوبت را جداگانه ویرایش کن یا تیک بزن. ثبت زمان واقعی در بخش سابقه انجام می‌شود.</p></div>
+          <div class="panel p-4 sm:p-5" id="personal-list"></div>
+          <details class="panel mt-4 p-4" id="session-queue"><summary id="queue-title" class="font-bold"></summary><div id="queue-list" class="mt-3 grid gap-2"></div></details>
         </div>
 
         <div id="log-view" hidden>
           <div class="view-heading"><p class="eyebrow">گزارش شخصی</p><h1>سابقهٔ مطالعه</h1><p>زمان‌های ثبت‌شده و مجموع مطالعه را اینجا ببین.</p></div>
+          <section class="panel mb-4 p-4 sm:p-5" aria-labelledby="chart-title">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="chart-title" class="section-title">زمان مطالعه و برنامه</h2>
+              <label for="chart-range" class="text-sm">بازه
+                <select id="chart-range" class="field"><option value="7">۷ روز اخیر</option><option value="30">۳۰ روز اخیر</option></select>
+              </label>
+            </div>
+            <p class="chart-legend"><span><i class="chart-planned"></i>برنامه‌ریزی‌شده</span><span><i class="chart-actual"></i>مطالعهٔ واقعی</span></p>
+            <p id="chart-scale" class="text-xs text-muted"></p>
+            <div class="chart-scroll" tabindex="0" aria-label="نمودار روزانه"><div id="study-chart" class="study-chart" aria-hidden="true"></div></div>
+            <details class="mt-3" open><summary class="font-bold">جدول ساعت‌های هر روز</summary>
+              <table class="study-table"><thead><tr><th scope="col">تاریخ</th><th scope="col">برنامه</th><th scope="col">واقعی</th></tr></thead><tbody id="chart-table"></tbody></table>
+            </details>
+          </section>
           <section class="panel">
             <div class="panel-heading flex-wrap"><div><h2 class="section-title">زمان‌های ثبت‌شده</h2><p id="log-total" class="mt-1 text-sm text-muted"></p></div><button class="button-primary" data-open-log type="button"><svg class="icon" aria-hidden="true"><use href="./icons.svg#plus"></use></svg>ثبت زمان مطالعه</button></div>
             <div id="log-rows" class="px-4 pb-4 sm:px-5"></div>
@@ -120,7 +144,15 @@
           <div><h2 id="log-title" class="text-xl font-extrabold">ثبت زمان مطالعه</h2><p class="mt-1 text-sm text-muted">یک نوبت مطالعه را به سابقه اضافه کن.</p></div>
           <button id="close-log" type="button" class="icon-button" aria-label="بستن"><svg class="icon" aria-hidden="true"><use href="./icons.svg#x"></use></svg></button>
         </div>
-        <p id="log-date" class="mt-4 rounded-xl bg-canvas px-3 py-2 text-sm text-muted"></p>
+        <fieldset class="mt-4 min-w-0" aria-describedby="log-date-error">
+          <legend class="text-sm font-bold">تاریخ مطالعه (شمسی)</legend>
+          <div class="date-fields mt-2 grid grid-cols-3 gap-2">
+            <label>سال<select id="log-date-year" class="field w-full" required></select></label>
+            <label>ماه<select id="log-date-month" class="field w-full" required></select></label>
+            <label>روز<select id="log-date-day" class="field w-full" required></select></label>
+          </div>
+          <p id="log-date-error" class="mt-2 text-sm text-red-800" role="alert"></p>
+        </fieldset>
         <label for="log-subject" class="mt-4 mb-1.5 block text-sm font-bold">درس</label>
         <select id="log-subject" name="subject" class="field w-full" required></select>
         <label for="log-duration" class="mt-4 mb-1.5 block text-sm font-bold">مدت مطالعه به ساعت</label>
@@ -133,6 +165,28 @@
           <button type="button" data-hours="1.5" class="button-secondary">۱٫۵ ساعت</button>
         </div>
         <button type="submit" class="button-primary mt-5 w-full">ذخیرهٔ زمان مطالعه</button>
+      </form>
+    </dialog>
+    <dialog id="chapter-dialog" class="panel" aria-labelledby="chapter-dialog-title">
+      <form id="chapter-form" class="p-5">
+        <h2 id="chapter-dialog-title" class="text-xl font-extrabold"></h2>
+        <p id="chapter-dialog-task" class="my-3 text-sm"></p>
+        <fieldset class="min-w-0">
+          <legend class="text-sm font-bold">تاریخ شمسی</legend>
+          <div class="date-fields mt-2 grid grid-cols-3 gap-2">
+            <label>سال<select id="date-year" class="field w-full" required></select></label>
+            <label>ماه<select id="date-month" class="field w-full" required></select></label>
+            <label>روز<select id="date-day" class="field w-full" required></select></label>
+          </div>
+        </fieldset>
+        <label for="session-hours" class="mt-3 block text-sm font-bold">مدت نوبت به ساعت</label>
+        <input id="session-hours" type="text" inputmode="decimal" maxlength="10" class="field mt-2 w-full" placeholder="مثلاً ۱٫۵" aria-describedby="chapter-preview session-error" required>
+        <div id="chapter-preview" class="my-3 text-sm text-muted" aria-live="polite"></div>
+        <p id="session-error" class="my-2 text-sm text-red-800" role="alert"></p>
+        <div class="flex flex-wrap gap-2">
+          <button id="chapter-save" type="submit" class="button-primary">ذخیره</button>
+          <button id="chapter-close" type="button" class="button-secondary">انصراف</button>
+        </div>
       </form>
     </dialog>
     <p id="message" class="toast" role="status" aria-live="polite" hidden></p>
