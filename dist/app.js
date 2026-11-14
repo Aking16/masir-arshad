@@ -158,7 +158,22 @@ function renderToday() {
   const examStatus = daysToExam > 0 ? number.format(daysToExam) + ' روز تا آغاز آزمون' :
     today <= examEnd ? 'بازهٔ برگزاری آزمون' : 'بازهٔ آزمون به پایان رسید';
   const countdown = $('exam-countdown-status');
-  if (countdown.textContent !== examStatus) countdown.textContent = examStatus;
+  if (countdown.textContent !== examStatus) {
+    if (daysToExam > 0) {
+      const dayNumber = document.createElement('span');
+      dayNumber.className = 'inline-block';
+      dayNumber.textContent = number.format(daysToExam);
+      countdown.replaceChildren(dayNumber, examStatus.slice(dayNumber.textContent.length));
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        dayNumber.animate(
+          [{ transform: 'translateY(-0.35em)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
+          { duration: 400, easing: 'ease-out' }
+        );
+      }
+    } else {
+      countdown.textContent = examStatus;
+    }
+  }
   const tomorrow = shift(today, 1);
   const todaySessions = state.source18Sessions.filter(session => session.date === today);
   const tomorrowSessions = state.source18Sessions.filter(session => session.date === tomorrow);
