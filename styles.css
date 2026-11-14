@@ -120,6 +120,8 @@
 .chapter-task .button-secondary { @apply mt-1; }
 #chapter-dialog { inline-size: min(calc(100% - 2rem), 34rem); margin: auto; max-block-size: calc(100dvh - 2rem); }
 #chapter-dialog::backdrop { background: #0929239c; }
+#chart-dialog { inline-size: min(calc(100% - 2rem), 28rem); margin: auto; max-block-size: calc(100dvh - 2rem); overflow: auto; }
+#chart-dialog::backdrop { background: #0929239c; }
 .date-fields label { @apply min-w-0 text-xs text-muted; }
 .date-fields select { @apply px-1.5 text-sm; }
 .chart-legend { @apply my-3 flex flex-wrap gap-4 text-sm text-muted; }
