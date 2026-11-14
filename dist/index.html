@@ -9,7 +9,7 @@
     <link rel="icon" href="./mark.svg" type="image/svg+xml">
     <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./site.css?v=9">
-    <script src="./app.js?v=10" type="module"></script>
+    <script src="./app.js?v=11" type="module"></script>
   </head>
   <body class="min-h-dvh bg-canvas text-ink antialiased">
     <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
@@ -115,6 +115,14 @@
         </div>
 
         <div id="log-view" hidden>
+          <section class="panel mb-4 p-4" aria-label="انتقال داده‌ها">
+            <div class="flex flex-wrap gap-2">
+              <button id="backup-export" type="button" class="button-secondary">خروجی گرفتن</button>
+              <button id="backup-import" type="button" class="button-secondary">ورود فایل</button>
+              <input id="backup-file" type="file" accept=".json,application/json" hidden>
+            </div>
+            <p id="backup-status" class="mt-2 text-sm" role="status" aria-atomic="true"></p>
+          </section>
           <div class="view-heading"><p class="eyebrow">گزارش شخصی</p><h1>سابقهٔ مطالعه</h1><p>زمان‌های ثبت‌شده و مجموع مطالعه را اینجا ببین.</p></div>
           <section class="panel mb-4 p-4 sm:p-5" aria-labelledby="chart-title">
             <div class="flex flex-wrap items-center justify-between gap-3">

@@ -1,4 +1,5 @@
 import { weeks } from './source-weeks.js';
+import { exportBackup, mergeBackup } from './backup.js';
 import { fromPersian, isFixed, planSessions, shift, toPersian } from './session-calendar.js';
 
 const $ = id => document.getElementById(id);
@@ -504,6 +505,44 @@ $('log-form').addEventListener('submit', event => {
   announce(saved ? 'زمان مطالعه ثبت شد.' : 'زمان مطالعه فعلاً در همین صفحه ثبت شد.');
 });
 window.addEventListener('hashchange', showRoute);
+$('backup-export').addEventListener('click', () => {
+  refreshStoredState();
+  const url = URL.createObjectURL(new Blob([JSON.stringify(exportBackup(state), null, 2)], { type: 'application/json' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'masir-arshad-' + dayKey() + '.json';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+$('backup-import').addEventListener('click', () => $('backup-file').click());
+$('backup-file').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  const status = $('backup-status');
+  try {
+    let backup;
+    try { backup = JSON.parse(await file.text()); }
+    catch { throw new Error('خواندن فایل JSON ممکن نبود.'); }
+    if ($('storage-warning').hidden) readState();
+    const merged = mergeBackup(state, backup, activities, validDate);
+    const planned = planSessions(weeks, merged.state.source18Sessions, merged.state.source18Done, merged.state.source18Omitted, dayKey());
+    merged.state.source18Sessions = planned.sessions;
+    const previous = state;
+    state = merged.state;
+    if (!saveState()) {
+      state = previous;
+      throw new Error('ذخیرهٔ فایل در مرورگر ممکن نبود.');
+    }
+    render();
+    status.textContent = number.format(merged.added) + ' افزوده شد، ' + number.format(merged.duplicates) +
+      ' تکراری و ' + number.format(merged.conflicts) + ' متعارض.';
+  } catch (error) {
+    status.textContent = error.message;
+  }
+});
 window.addEventListener('storage', event => {
   if (event.key === storageKey || event.key === null) { readState(); render(); }
 });
