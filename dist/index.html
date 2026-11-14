@@ -9,7 +9,7 @@
     <link rel="icon" href="./mark.svg" type="image/svg+xml">
     <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./site.css?v=9">
-    <script src="./app.js?v=11" type="module"></script>
+    <script src="./app.js?v=12" type="module"></script>
   </head>
   <body class="min-h-dvh bg-canvas text-ink antialiased">
     <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
@@ -115,6 +115,10 @@
         </div>
 
         <div id="log-view" hidden>
+          <div class="mb-4 grid grid-cols-2 gap-2">
+            <section class="panel p-4"><h2 class="text-sm font-bold">مطالعهٔ این هفته</h2><p id="log-week-total" class="mt-2 text-lg font-bold"></p></section>
+            <section class="panel p-4"><h2 class="text-sm font-bold">مطالعهٔ این ماه</h2><p id="log-month-total" class="mt-2 text-lg font-bold"></p></section>
+          </div>
           <section class="panel mb-4 p-4" aria-label="انتقال داده‌ها">
             <div class="flex flex-wrap gap-2">
               <button id="backup-export" type="button" class="button-secondary">خروجی گرفتن</button>
@@ -128,9 +132,27 @@
             <div class="flex flex-wrap items-center justify-between gap-3">
               <h2 id="chart-title" class="section-title">زمان مطالعه و برنامه</h2>
               <label for="chart-range" class="text-sm">بازه
-                <select id="chart-range" class="field"><option value="7">۷ روز اخیر</option><option value="30">۳۰ روز اخیر</option></select>
+                <select id="chart-range" class="field"><option value="7">۷ روز اخیر</option><option value="30">۳۰ روز اخیر</option><option value="week">هفته</option><option value="month">ماه</option></select>
               </label>
             </div>
+            <div id="chart-period-controls" class="mt-3 flex flex-wrap items-center gap-2" hidden>
+              <button id="chart-prev" type="button" class="button-secondary">قبلی</button>
+              <output id="chart-period-label" class="text-sm" aria-live="polite"></output>
+              <button id="chart-next" type="button" class="button-secondary">بعدی</button>
+              <button id="chart-pick" type="button" class="button-secondary">انتخاب از تقویم</button>
+            </div>
+            <dialog id="chart-dialog" class="panel p-4" aria-labelledby="chart-picker-title">
+              <form id="chart-picker">
+                <h3 id="chart-picker-title" class="font-bold"></h3>
+                <div class="date-fields mt-2 grid grid-cols-3 gap-2">
+                  <label>سال<select id="chart-date-year" class="field w-full"></select></label>
+                  <label>ماه<select id="chart-date-month" class="field w-full"></select></label>
+                  <label id="chart-day-field">روز<select id="chart-date-day" class="field w-full"></select></label>
+                </div>
+                <p id="chart-date-error" class="mt-2 text-sm text-red-800" role="alert"></p>
+                <div class="mt-3 flex gap-2"><button class="button-primary">نمایش</button><button id="chart-cancel" type="button" class="button-secondary">انصراف</button></div>
+              </form>
+            </dialog>
             <p class="chart-legend"><span><i class="chart-planned"></i>برنامه‌ریزی‌شده</span><span><i class="chart-actual"></i>مطالعهٔ واقعی</span></p>
             <p id="chart-scale" class="text-xs text-muted"></p>
             <div class="chart-scroll" tabindex="0" aria-label="نمودار روزانه"><div id="study-chart" class="study-chart" aria-hidden="true"></div></div>

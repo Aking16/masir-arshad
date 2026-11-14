@@ -175,7 +175,7 @@ function renderToday() {
   $('today-completion').textContent = number.format(done) + ' از ' + number.format(todaySessions.length);
   $('today-badge').textContent = todaySessions.length ? number.format(done) + ' انجام شد' : 'بدون نوبت';
   $('reminder-dot').hidden = ![...todaySessions, ...tomorrowSessions].some(session => !session.done);
-  const saturday = shift(today, -((new Date(midnight(today)).getUTCDay() + 1) % 7));
+  const saturday = weekStart(today);
   $('today-minutes').textContent = duration(sumMinutes(state.entries.filter(entry => entry.date === today)));
   $('week-minutes').textContent = duration(sumMinutes(state.entries.filter(entry => entry.date >= saturday && entry.date <= today)));
 }
@@ -231,10 +231,30 @@ function renderLog() {
   renderChart();
 }
 
+const weekStart = date => shift(date, -((new Date(midnight(date)).getUTCDay() + 1) % 7));
+function monthStart(date, delta = 0) {
+  const {year, month} = toPersian(date);
+  const index = month - 1 + delta;
+  return fromPersian(year + Math.floor(index / 12), (index + 12) % 12 + 1, 1);
+}
+let chartAnchor = null;
+const chartMode = () => $('chart-range').value;
+const periodStart = (date, mode) => mode === 'week' ? weekStart(date) : monthStart(date);
+
 function renderChart() {
-  const count = Number($('chart-range').value);
+  const actualSince = start => duration(sumMinutes(state.entries.filter(entry => entry.date >= start && entry.date <= today)));
+  $('log-week-total').textContent = actualSince(weekStart(today));
+  $('log-month-total').textContent = actualSince(monthStart(today));
+  const mode = chartMode();
+  const calendar = mode === 'week' || mode === 'month';
+  const start = calendar ? periodStart(chartAnchor || today, mode) : shift(today, 1 - Number(mode));
+  const end = mode === 'week' ? shift(start, 6) : mode === 'month' ? shift(monthStart(start, 1), -1) : today;
+  $('chart-period-controls').hidden = !calendar;
+  $('chart-period-label').textContent = dateLabel(start) + ' تا ' + dateLabel(end);
+  $('chart-next').disabled = calendar && start >= periodStart(today, mode);
+  const count = (midnight(end) - midnight(start)) / 86400000 + 1;
   const days = Array.from({length: count}, (_, index) => {
-    const date = shift(today, index + 1 - count);
+    const date = shift(start, index);
     return { date, planned: sumMinutes(state.source18Sessions.filter(session => session.date === date)),
       actual: sumMinutes(state.entries.filter(entry => entry.date === date)) };
   });
@@ -263,7 +283,40 @@ function renderChart() {
     table.append(row);
   }
 }
-$('chart-range').addEventListener('change', renderChart);
+$('chart-range').addEventListener('change', () => {
+  chartAnchor = null;
+  renderChart();
+});
+for (const [id, step] of [['chart-prev', -1], ['chart-next', 1]]) $(id).addEventListener('click', () => {
+  const mode = chartMode();
+  const start = periodStart(chartAnchor || today, mode);
+  const next = mode === 'week' ? shift(start, step * 7) : monthStart(start, step);
+  if (next > periodStart(today, mode)) return;
+  chartAnchor = next === periodStart(today, mode) ? null : next;
+  renderChart();
+});
+$('chart-pick').addEventListener('click', () => {
+  const month = chartMode() === 'month';
+  $('chart-picker-title').textContent = month ? 'انتخاب ماه' : 'انتخاب روزی از هفته';
+  $('chart-day-field').hidden = month;
+  $('chart-date-error').textContent = '';
+  openPersianDate(chartAnchor || today, 'chart-date');
+  $('chart-dialog').showModal();
+});
+$('chart-cancel').addEventListener('click', () => $('chart-dialog').close());
+$('chart-picker').addEventListener('submit', event => {
+  event.preventDefault();
+  const mode = chartMode();
+  const date = mode === 'month' ? fromPersian(Number($('chart-date-year').value), Number($('chart-date-month').value), 1) : selectedDate('chart-date');
+  const current = periodStart(today, mode);
+  if (!date || periodStart(date, mode) > current) {
+    $('chart-date-error').textContent = 'دورهٔ جاری یا یکی از دوره‌های گذشته را انتخاب کن.';
+    return;
+  }
+  chartAnchor = periodStart(date, mode) === current ? null : date;
+  $('chart-dialog').close();
+  renderChart();
+});
 
 function renderQueue() {
   $('queue-title').textContent = 'صف نوبت‌های تعیین‌نشده · ' + duration(sumMinutes(queuedSessions));
@@ -306,7 +359,7 @@ function refreshDate() {
 }
 
 const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-for (const prefix of ['date', 'log-date']) {
+for (const prefix of ['date', 'log-date', 'chart-date']) {
   months.forEach((name, index) => $(prefix + '-month').add(new Option(name, String(index + 1))));
 }
 
@@ -329,6 +382,10 @@ function openPersianDate(date, prefix = 'date') {
 }
 
 const selectedDate = prefix => fromPersian(...['year', 'month', 'day'].map(part => Number($(prefix + '-' + part).value)));
+for (const part of ['year', 'month', 'day']) $('chart-date-' + part).addEventListener('change', () => {
+  if (part !== 'day') updateDays('chart-date');
+  $('chart-date-error').textContent = '';
+});
 
 function editSession(activityId, session) {
   sessionEdit = { activityId, id: session?.id };
