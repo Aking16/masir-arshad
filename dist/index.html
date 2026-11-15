@@ -9,9 +9,9 @@
   <title>مسیر ارشد | برنامهٔ مطالعهٔ ۱۴۰۶</title>
   <link rel="icon" href="./mark.svg" type="image/svg+xml">
   <link rel="preload" href="./vazirmatn.woff2" as="font" type="font/woff2" crossorigin>
-  <script src="./theme.js?v=16"></script>
+  <script src="./theme.js?v=17"></script>
   <link rel="stylesheet" href="./site.css?v=16">
-  <script src="./app.js?v=16" type="module"></script>
+  <script src="./app.js?v=17" type="module"></script>
 </head>
 
 <body class="min-h-dvh bg-canvas text-ink antialiased">
@@ -26,7 +26,7 @@
       <div class="flex items-center gap-2 sm:gap-3">
         <button id="theme-toggle" type="button" class="icon-button" aria-label="حالت تیره" aria-pressed="false"><svg
             class="icon" aria-hidden="true">
-            <use href="./icons.svg?v=16#moon"></use>
+            <use href="./icons.svg?v=17#moon"></use>
           </svg></button>
         <p class="hidden items-center gap-2 text-sm text-muted sm:flex"><svg class="icon" aria-hidden="true">
             <use href="./icons.svg#calendar"></use>
@@ -37,7 +37,7 @@
           </svg><span id="reminder-dot" class="reminder-dot" hidden></span></button>
         <a id="github-link" href="https://github.com/Aking16/masir-arshad" target="_blank" class="icon-button"
           aria-label="لینک گیت هاب" aria-pressed="false"><svg class="icon" aria-hidden="true">
-            <use href="./icons.svg?v=16#github"></use>
+            <use href="./icons.svg?v=17#github"></use>
           </svg></a>
       </div>
     </div>
@@ -72,7 +72,7 @@
       </div>
       <section class="panel mt-3 p-4" aria-labelledby="exam-countdown-title">
         <h2 id="exam-countdown-title" class="text-sm font-bold text-muted">روزشمار آزمون ارشد ۱۴۰۶</h2>
-        <p id="exam-countdown-status" class="mt-1 text-xl font-extrabold tabular-nums text-brand" aria-live="off"></p>
+        <p id="exam-countdown-status" class="mt-1 text-xl font-extrabold tabular-nums text-brand" aria-live="off"><span id="exam-countdown-days" class="inline-block">۰</span> روز، <span id="exam-countdown-hours" class="inline-block">۰۰</span>:<span id="exam-countdown-minutes" class="inline-block">۰۰</span>:<span id="exam-countdown-seconds" class="inline-block">۰۰</span></p>
         <p id="exam-countdown-live" class="sr-only" role="status" aria-atomic="true"></p>
       </section>
     </aside>

@@ -100,6 +100,7 @@ let sessionEdit;
 const dialog = $('chapter-dialog');
 let queuedSessions = [];
 let previousCountdown;
+let countdownInitialized = false;
 
 function refreshSchedule() {
   const { sessions, queue } = planSessions(weeks, state.source18Sessions, state.source18Done, state.source18Omitted, today);
@@ -174,21 +175,24 @@ function updateExamCountdown() {
   seconds -= hours * 3600;
   const minutes = Math.floor(seconds / 60);
   seconds -= minutes * 60;
-  const status = [
-    number.format(days) + ' روز',
-    number.format(hours).padStart(2, '۰') + ' ساعت',
-    number.format(minutes).padStart(2, '۰') + ' دقیقه',
-    number.format(seconds).padStart(2, '۰') + ' ثانیه',
-  ].join(' و ') + ' تا آغاز آزمون';
-  if (countdown.textContent !== status) {
-    countdown.textContent = status;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      countdown.animate(
-        [{ transform: 'translateY(-0.18em)', opacity: 0.55 }, { transform: 'translateY(0)', opacity: 1 }],
+  const values = {
+    'exam-countdown-days': number.format(days),
+    'exam-countdown-hours': number.format(hours).padStart(2, '۰'),
+    'exam-countdown-minutes': number.format(minutes).padStart(2, '۰'),
+    'exam-countdown-seconds': number.format(seconds).padStart(2, '۰'),
+  };
+  for (const [id, value] of Object.entries(values)) {
+    const part = $(id);
+    if (part.textContent === value) continue;
+    part.textContent = value;
+    if (countdownInitialized && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      part.animate(
+        [{ transform: 'translateY(-0.35em)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
         { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }
       );
     }
   }
+  countdownInitialized = true;
   const dayStatus = number.format(days) + ' روز تا آغاز آزمون';
   if (previousCountdown !== dayStatus) live.textContent = dayStatus;
   previousCountdown = dayStatus;
