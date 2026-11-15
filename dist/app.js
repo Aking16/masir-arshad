@@ -14,6 +14,8 @@ const subjects = [...new Set([...activities.values()].map(activity => activity.s
 const midnight = date => Date.parse(date + 'T00:00:00Z');
 const examStart = fromPersian(1406, 2, 16);
 const examEnd = fromPersian(1406, 2, 17);
+const examStartTime = Date.parse(examStart + 'T00:00:00+03:30');
+const examEndTime = Date.parse(shift(examEnd, 1) + 'T00:00:00+03:30');
 const validDate = date => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(midnight(date)) && shift(date, 0) === date;
 function dateLabel(date) {
   const parts = Object.fromEntries(dateFormat.formatToParts(new Date(midnight(date))).map(({type, value}) => [type, value]));
@@ -97,6 +99,7 @@ let toastTimer;
 let sessionEdit;
 const dialog = $('chapter-dialog');
 let queuedSessions = [];
+let previousCountdown;
 
 function refreshSchedule() {
   const { sessions, queue } = planSessions(weeks, state.source18Sessions, state.source18Done, state.source18Omitted, today);
@@ -153,27 +156,46 @@ function renderSessions(container, sessions, message) {
   container.replaceChildren(...(sorted.length ? sorted.map(sessionRow) : [make('p', 'empty', message)]));
 }
 
-function renderToday() {
-  const daysToExam = (midnight(examStart) - midnight(today)) / 86400000;
-  const examStatus = daysToExam > 0 ? number.format(daysToExam) + ' روز تا آغاز آزمون' :
-    today <= examEnd ? 'بازهٔ برگزاری آزمون' : 'بازهٔ آزمون به پایان رسید';
+function updateExamCountdown() {
+  const now = Date.now();
   const countdown = $('exam-countdown-status');
-  if (countdown.textContent !== examStatus) {
-    if (daysToExam > 0) {
-      const dayNumber = document.createElement('span');
-      dayNumber.className = 'inline-block';
-      dayNumber.textContent = number.format(daysToExam);
-      countdown.replaceChildren(dayNumber, examStatus.slice(dayNumber.textContent.length));
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        dayNumber.animate(
-          [{ transform: 'translateY(-0.35em)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
-          { duration: 400, easing: 'ease-out' }
-        );
-      }
-    } else {
-      countdown.textContent = examStatus;
+  const live = $('exam-countdown-live');
+  if (now >= examStartTime) {
+    const status = now < examEndTime ? 'بازهٔ برگزاری آزمون' : 'بازهٔ آزمون به پایان رسید';
+    if (countdown.textContent !== status) countdown.textContent = status;
+    if (previousCountdown !== status) live.textContent = status;
+    previousCountdown = status;
+    return;
+  }
+  let seconds = Math.ceil((examStartTime - now) / 1000);
+  const days = Math.floor(seconds / 86400);
+  seconds -= days * 86400;
+  const hours = Math.floor(seconds / 3600);
+  seconds -= hours * 3600;
+  const minutes = Math.floor(seconds / 60);
+  seconds -= minutes * 60;
+  const status = [
+    number.format(days) + ' روز',
+    number.format(hours).padStart(2, '۰') + ' ساعت',
+    number.format(minutes).padStart(2, '۰') + ' دقیقه',
+    number.format(seconds).padStart(2, '۰') + ' ثانیه',
+  ].join(' و ') + ' تا آغاز آزمون';
+  if (countdown.textContent !== status) {
+    countdown.textContent = status;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      countdown.animate(
+        [{ transform: 'translateY(-0.18em)', opacity: 0.55 }, { transform: 'translateY(0)', opacity: 1 }],
+        { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }
+      );
     }
   }
+  const dayStatus = number.format(days) + ' روز تا آغاز آزمون';
+  if (previousCountdown !== dayStatus) live.textContent = dayStatus;
+  previousCountdown = dayStatus;
+}
+
+function renderToday() {
+  updateExamCountdown();
   const tomorrow = shift(today, 1);
   const todaySessions = state.source18Sessions.filter(session => session.date === today);
   const tomorrowSessions = state.source18Sessions.filter(session => session.date === tomorrow);
@@ -619,7 +641,15 @@ window.addEventListener('storage', event => {
   if (event.key === storageKey || event.key === null) { readState(); render(); }
 });
 window.addEventListener('focus', refreshDate);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDate(); });
-setInterval(refreshDate, 30_000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    refreshDate();
+    updateExamCountdown();
+  }
+});
+setInterval(() => {
+  updateExamCountdown();
+  refreshDate();
+}, 1_000);
 readState();
 showRoute();
